@@ -12,13 +12,16 @@ class DatabaseSeeder extends Seeder
         Author::factory()->count(1000)->create();
         Category::factory()->count(3000)->create();
 
+        // Create books
         $books = Book::factory()->count(100000)->create();
 
+        // Attach categories
         $books->each(function ($book) {
             $cats = \App\Models\Category::inRandomOrder()->limit(rand(2,4))->pluck('id');
             $book->categories()->attach($cats);
         });
 
+        // Ratings in chunks
         Book::chunk(5000, function ($books) {
             foreach ($books as $book) {
                 BookRating::factory()->count(rand(2,10))->create(['book_id' => $book->id]);
